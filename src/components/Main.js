@@ -6,7 +6,6 @@ import ImgFigure from './imgFigure.js';
 import {findDOMNode} from 'react-dom';
 
 let imageArr=require('../data/images.json');
-let yeomanImage = require('../images/yeoman.png');
 
 class AppComponent extends React.Component {
   state = {
@@ -15,7 +14,10 @@ class AppComponent extends React.Component {
         pos:{
           left:0,
           top:0
-        }
+        },
+        rotate:0,
+        isInverse:false,  //图片正反面
+        isCenter:false
       }
     ]
 
@@ -39,6 +41,9 @@ class AppComponent extends React.Component {
   rangeRandom(a,b){
     return Math.ceil(Math.random()*(b-a)+a)
   }
+  get30DegRandom(){
+    return (Math.random()>0.5?'':'-') + Math.ceil(Math.random()*30)
+  }
   //图片加载后计算每张图片的位置
   componentDidMount(){
     //先拿到舞台的大小
@@ -60,7 +65,7 @@ class AppComponent extends React.Component {
     }
     //计算左侧右侧图片排布取值范围
     this.constant.hPosRange.leftSecX[0]=-halfImgW
-    this.constant.hPosRange.leftSecX[1]=halfStageW-halfImgW
+    this.constant.hPosRange.leftSecX[1]=halfStageW-imgW
     this.constant.hPosRange.rightSecX[0]=halfStageW+halfImgW
     this.constant.hPosRange.rightSecX[1]=stageW-halfImgW
     this.constant.hPosRange.y[0]=-halfImgH
@@ -89,14 +94,21 @@ class AppComponent extends React.Component {
 
     //让中心图片居中
     centerImgArr[0].pos=constant.centerPos
+    centerImgArr[0].rotate=0
+    centerImgArr[0].isInverse=false
+    centerImgArr[0].isCenter=true
     //取出要布局上侧的图片
     topImgSpliceIndex=Math.ceil(Math.random()*(imgsArr.length-topImgNum))
     topImgArr=imgsArr.splice(topImgSpliceIndex,topImgNum)
     //布局位于上侧的图片
     topImgArr.forEach((val,index)=>{
-      topImgArr[index].pos={
-        top: this.rangeRandom(vPosRange.topY[0],vPosRange.topY[1]),
-        left: this.rangeRandom(vPosRange.x[0],vPosRange.x[1])
+      topImgArr[index]={
+        pos:{
+          top: this.rangeRandom(vPosRange.topY[0],vPosRange.topY[1]),
+          left: this.rangeRandom(vPosRange.x[0],vPosRange.x[1])
+        },
+        rotate:this.get30DegRandom(),
+        isCenter:false
       }
     })
 
@@ -108,9 +120,13 @@ class AppComponent extends React.Component {
       }else{
         range=hPosRange.rightSecX
       }
-      imgsArr[i].pos={
-        top:this.rangeRandom(hPosRange.y[0],hPosRange.y[1]),
-        left:this.rangeRandom(range[0],range[1])
+      imgsArr[i]={
+        pos:{
+          top: this.rangeRandom(hPosRange.y[0],hPosRange.y[1]),
+          left: this.rangeRandom(range[0],range[1])
+        },
+        rotate:this.get30DegRandom(),
+        isCenter:false
       }
 
     }
@@ -122,20 +138,42 @@ class AppComponent extends React.Component {
       imgsArrangeArr:imgsArr
     })
   }
+  //翻转图片，用闭包函数
+  inverse(index){
+    return ()=>{
+      var imgsArrangeArr=this.state.imgsArrangeArr
+      imgsArrangeArr[index].isInverse=!imgsArrangeArr[index].isInverse
+      this.setState({
+        imgsArrangeArr:imgsArrangeArr
+      })
+    }
+  }
+  //居中图片，用闭包
+  center(index){
+    return ()=>{
+      this.reArrange(index)
+    }
+  }
   render() {
     let controllerUnits=[];
     let imgFigures=[];
     imageArr.forEach((obj,index) => {
-      console.log(this)
       if(!this.state.imgsArrangeArr[index]){
         this.state.imgsArrangeArr[index]={
           pos:{
             left:0,
             top:0
-          }
+          },
+          rotate:0
         }
       }
-      imgFigures.push(<ImgFigure key={'key_'+index} data={obj} ref={'imgFigure'+index} arrange={this.state.imgsArrangeArr[index]}/>)
+      imgFigures.push(<ImgFigure key={'key_'+index}
+                                 data={obj}
+                                 ref={'imgFigure'+index}
+                                 arrange={this.state.imgsArrangeArr[index]}
+                                 inverse={this.inverse(index)}
+                                 center={this.center(index)}
+      />)
     });
     return (
       //<div className="index">
