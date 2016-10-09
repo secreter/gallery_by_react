@@ -3,6 +3,7 @@ require('styles/App.scss');
 
 import React from 'react';
 import ImgFigure from './imgFigure.js';
+import ControlDot from './controlDot.js';
 import {findDOMNode} from 'react-dom';
 
 let imageArr=require('../data/images.json');
@@ -98,7 +99,7 @@ class AppComponent extends React.Component {
     centerImgArr[0].isInverse=false
     centerImgArr[0].isCenter=true
     //取出要布局上侧的图片
-    topImgSpliceIndex=Math.ceil(Math.random()*(imgsArr.length-topImgNum))
+    topImgSpliceIndex=Math.floor(Math.random()*(imgsArr.length-topImgNum))
     topImgArr=imgsArr.splice(topImgSpliceIndex,topImgNum)
     //布局位于上侧的图片
     topImgArr.forEach((val,index)=>{
@@ -157,6 +158,7 @@ class AppComponent extends React.Component {
   render() {
     let controllerUnits=[];
     let imgFigures=[];
+    let controlDot=[];
     imageArr.forEach((obj,index) => {
       if(!this.state.imgsArrangeArr[index]){
         this.state.imgsArrangeArr[index]={
@@ -174,6 +176,12 @@ class AppComponent extends React.Component {
                                  inverse={this.inverse(index)}
                                  center={this.center(index)}
       />)
+      controlDot.push(<ControlDot
+                                  key={'key_'+index}
+                                  arrange={this.state.imgsArrangeArr[index]}
+                                  inverse={this.inverse(index)}
+                                  center={this.center(index)}
+      />)
     });
     return (
       //<div className="index">
@@ -184,8 +192,8 @@ class AppComponent extends React.Component {
         <section className="img-sec">
           {imgFigures}
         </section>
-        <nav className="img-nav">
-          {controllerUnits}
+        <nav className="control-nav">
+          {controlDot}
         </nav>
 
       </section>

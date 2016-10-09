@@ -95,12 +95,51 @@ html,body{
     }
   }
 }
-.img-nav{
+.control-nav{
   position: absolute;
   left:0;
   bottom: 30px;
   z-index: 101;
   width: 100%;
   text-align: center;
+  @at-root{
+    .controller{
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 5px;
+      width: 30px;
+      height: 30px;
+      text-align: center;
+      border-radius: 50%;
+      background-color: #eee;
+      cursor: pointer;
+      transform: scale(0.5);
+      transition: all 0.6s ease-in-out;
+      transform-style: preserve-3d;
+      transform-origin: 0 50% 0;
+      &.is-center{
+        transform: scale(1);
+        background-color: #888;
+        position: relative;
+        top:-10px;
+        left: -8px;
+        //transform: rotateY(180deg) translate(-20px,0);
+        &::after{
+          content:'->';
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          //字体边缘平滑处理
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+
+        }
+      }
+      &.is-inverse{
+        transform: rotateY(180deg) translate(-30px,0);
+      }
+    }
+  }
 }
 
