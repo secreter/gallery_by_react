@@ -14,6 +14,7 @@ class ImgFigure extends React.Component {
     e.preventDefault()
   }.bind(this)
   render(){
+    var img=require('../images/'+ this.props.data.name);
     var styleObj=this.props.arrange.pos
     if(this.props.arrange.rotate){
       (['transform','WebkitTransform','MozTransform','MsTransform']).forEach((val)=>{
@@ -27,7 +28,7 @@ class ImgFigure extends React.Component {
     return (
       <figure className={classes} style={styleObj} onClick={this.handleClick}>
         <div className="img-front">
-          <img src={'../images/'+ this.props.data.name} alt={this.props.data.title}/>
+          <img src={img} alt={this.props.data.title}/>
           <figcaption>
             <h2>{this.props.data.title}</h2>
           </figcaption>
